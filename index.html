@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Videos de Paraview</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    /* ── CÁPSULA DE VIDEOS (index) ─────────────────────── */
+    .video-index-section {
+      background: #111827;
+      border-radius: 18px;
+      overflow: hidden;
+      margin: 0 0 60px 0;
+      box-shadow: 0 8px 40px rgba(13,27,62,0.22);
+    }
+
+    .video-index-header {
+      padding: 22px 28px 16px;
+      border-bottom: 1px solid rgba(44,111,173,0.2);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .video-index-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      flex: 1;
+    }
+
+    .video-index-subtitle {
+      font-size: 12px;
+      color: rgba(255,255,255,0.45);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .video-index-badge {
+      background: rgba(44,111,173,0.2);
+      border: 1px solid rgba(91,130,176,0.4);
+      color: #93c5fd;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 999px;
+      letter-spacing: 0.05em;
+    }
+
+    .video-index-progress {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 28px;
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .video-index-progress .progress-label { font-size: 12px; color: #5b82b0; font-weight: 500; }
+
+    .video-index-layout {
+      display: flex;
+      min-height: 520px;
+    }
+
+    .video-index-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #000;
+    }
+
+    .video-index-embed {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%;
+      background: #000;
+    }
+
+    .video-index-embed iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      border: none;
+    }
+
+    .video-index-embed .video-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #111827 0%, #1e3a5f 100%);
+      color: #fff;
+      gap: 14px;
+      cursor: pointer;
+    }
+
+    .video-index-embed .video-placeholder-icon {
+      width: 80px; height: 80px;
+      background: rgba(164,53,240,0.25);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 34px;
+      transition: background 0.2s, transform 0.2s;
+      border: 2px solid rgba(164,53,240,0.4);
+    }
+
+    .video-index-embed .video-placeholder:hover .video-placeholder-icon {
+      background: rgba(164,53,240,0.45);
+      transform: scale(1.08);
+    }
+
+    .video-index-embed .video-placeholder-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.9);
+    }
+
+    .video-index-embed .video-placeholder-sub {
+      font-size: 13px;
+      color: rgba(255,255,255,0.45);
+    }
+
+    .video-index-infobar {
+      background: #1a2535;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .video-index-sidebar {
+      width: 320px;
+      background: #1a2535;
+      border-left: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sidebar-group-label {
+      padding: 12px 14px 6px;
+      font-size: 10px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.35);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    @media (max-width: 768px) {
+      .video-index-layout { flex-direction: column; }
+      .video-index-sidebar { width: 100%; border-left: none; border-top: 1px solid rgba(255,255,255,0.08); }
+      .sidebar-list { max-height: 220px; }
+    }
+
+    /* ── BOTÓN AMPLIAR ─────────────────────────────────── */
+    .btn-expand {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(91,130,176,0.15);
+      border: 1px solid rgba(91,130,176,0.35);
+      color: #93c5fd;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 13px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      letter-spacing: 0.03em;
+    }
+    .btn-expand:hover {
+      background: rgba(91,130,176,0.28);
+      border-color: rgba(91,130,176,0.6);
+    }
+    .btn-expand svg { flex-shrink: 0; }
+
+    /* ── MODAL LIGHTBOX ────────────────────────────────── */
+    #video-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(0,0,0,0.88);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    #video-modal.open { display: flex; }
+    #video-modal .modal-inner {
+      position: relative;
+      width: 100%;
+      max-width: 1100px;
+      background: #000;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 80px rgba(0,0,0,0.7);
+    }
+    #video-modal .modal-ratio {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%;
+    }
+    #video-modal iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      border: none;
+    }
+    #video-modal .modal-close {
+      position: absolute;
+      top: -38px;
+      right: 0;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 28px;
+      cursor: pointer;
+      line-height: 1;
+      opacity: 0.75;
+      transition: opacity 0.2s;
+    }
+    #video-modal .modal-close:hover { opacity: 1; }
+
+    /* ── CARRUSEL ──────────────────────────────────────── */
+    .carousel-wrapper {
+      position: relative;
+      margin: 0 0 60px;
+    }
+    .carousel-overflow {
+      overflow: hidden;
+      border-radius: 18px;
+    }
+
+    .carousel-track {
+      display: flex;
+      transition: transform 0.45s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .carousel-slide {
+      min-width: 100%;
+      display: flex;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 6px 32px rgba(13,27,62,0.18);
+    }
+
+    .slide-header {
+      width: 260px;
+      min-width: 260px;
+      padding: 30px 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      color: #1a2a3a;
+      background: #c3d6ede3;
+      border-right: 1px solid #052649;
+      position: relative;
+    }
+
+    .slide-header::after {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 4px;
+      background: var(--slide-accent, #013361);
+      border-radius: 0;
+    }
+
+    .slide-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: rgba(44,111,173,0.12);
+      border: 1px solid rgba(44,111,173,0.25);
+      border-radius: 999px;
+      padding: 4px 12px;
+      display: inline-block;
+      align-self: flex-start;
+      color: #1e3a5f;
+    }
+
+    .slide-icon { font-size: 44px; margin: 8px 0 4px; }
+
+    .slide-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 19px;
+      font-weight: 700;
+      color: #1a2a3a;
+      margin: 0;
+      line-height: 1.3;
+    }
+
+    .slide-subtitle {
+      font-size: 11.5px;
+      color: #03254b;
+      margin: 0;
+      letter-spacing: 0.03em;
+    }
+
+    .slide-body {
+      flex: 1;
+      background: #1a2535;
+      padding: 28px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .slide-intro {
+      font-size: 14px;
+      color: rgba(255,255,255,0.65);
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    .slide-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .slide-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.82);
+      line-height: 1.5;
+    }
+
+    .slide-list li strong { color: #fff; font-weight: 600; }
+
+    .sl-dot {
+      width: 8px;
+      height: 8px;
+      min-width: 8px;
+      border-radius: 50%;
+      margin-top: 5px;
+    }
+
+    .slide-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: auto;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .tool-chip {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 999px;
+      border: 1px solid;
+      letter-spacing: 0.04em;
+    }
+
+    .carousel-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .carousel-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 2px solid #1a2a3a;
+      background: #fff;
+      color: #1a2a3a;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, transform 0.15s, color 0.2s;
+      line-height: 1;
+      box-shadow: 0 1px 4px rgba(26,42,58,0.15);
+    }
+
+    .carousel-btn:hover { background: #1a2a3a; color: #fff; }
+    .carousel-btn:active { transform: scale(0.92); }
+    .carousel-btn:disabled { opacity: 0.22; cursor: default; pointer-events: none; }
+
+    .carousel-dots { display: flex; gap: 8px; align-items: center; }
+
+    .cdot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: transparent;
+      border: 2px solid rgba(26,42,58,0.3);
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s, border-color 0.2s;
+    }
+
+    .cdot.active {
+      background: #1a2a3a;
+      border-color: #1a2a3a;
+      transform: scale(1.3);
+    }
+
+    .cdot:hover:not(.active) { border-color: #1a2a3a; }
+
+    @media (max-width: 768px) {
+      .carousel-slide { flex-direction: column; }
+      .slide-header { width: 100%; min-width: unset; padding: 24px 22px; }
+      .slide-body { padding: 22px; }
+    }
+
+    /* ── HERO overrides (portada estilo formulario) ─── */
+    .hero {
+      background: #1a3564;
+      min-height: 580px;
+      padding: 0;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .hero-grid-overlay {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 52px 52px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .hero-logos-bar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      padding: 22px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 48px;
+      z-index: 3;
+      flex-wrap: wrap;
+    }
+
+    .hero-logos-divider {
+      width: 1px;
+      height: 44px;
+      background: rgba(255,255,255,0.18);
+      flex-shrink: 0;
+    }
+
+    .hero-logo-img {
+      height: 96px;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 1px 6px rgba(0,0,0,0.3));
+      opacity: 0.95;
+    }
+
+    .hero-logo-seminario { height: 104px; }
+
+    .hero-bg-numeral {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -44%);
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(200px, 30vw, 340px);
+      font-weight: 700;
+      color: rgba(255,255,255,0.045);
+      user-select: none;
+      pointer-events: none;
+      z-index: 2;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 3;
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 140px 40px 68px;
+      text-align: center;
+    }
+
+    .hero-supertitle {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 10px;
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(32px, 5vw, 58px);
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.13;
+      margin-bottom: 18px;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: rgba(200,218,240,0.72);
+    }
+
+    .hero-subtitle-line {
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.78;
+      max-width: 560px;
+      margin: 0 auto 34px;
+    }
+
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 36px;
+      flex-wrap: wrap;
+    }
+
+    .hero-stat { text-align: center; }
+
+    .hero-stat strong {
+      display: block;
+      font-family: 'Playfair Display', serif;
+      font-size: 30px;
+      font-weight: 700;
+      color: #c9a227;
+    }
+
+    .hero-stat span {
+      font-size: 10px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.42);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* hero-badge ya no se usa, pero lo dejamos neutral */
+    .hero-badge { display: none; }
+    .hero-desc  { display: none; }
+
+    .hero-logo-img {
+      transition: opacity .1s, transform .1s, filter .1s;
+      cursor: pointer;
+    }
+    .hero-logo-img:hover {
+      opacity: 1 !important;
+      transform: scale(1.12) translateY(-3px);
+      filter: drop-shadow(0 4px 18px rgba(255,255,255,0.4)) brightness(1.2);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="index.html" class="header-logo">BC</a>
+      <a href="index.html" class="header-title">
+        Videos Complementarios 
+        <span>Paraview</span>
+      </a>
+      <nav class="header-nav">
+        <a href="#videos">Videos</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO PORTADA -->
+  <section class="hero">
+    <div class="hero-grid-overlay"></div>
+    <div class="hero-logos-bar">
+      <div class="hero-logos-divider"></div>
+      <img src="LogoCM.png" alt="SEDPEM"                  class="hero-logo-img hero-logo-seminario">
+      <div class="hero-logos-divider"></div>
+    </div>
+    <div class="hero-bg-numeral">VTK</div>
+    <div class="hero-content">
+      <p class="hero-supertitle">Videos Explicativos</p>
+      <h1>Importación de archivos, Generación de imágenes en d=2,3.<br>y Exportación en .png</h1>
+      <p class="hero-subtitle-line">Disculpas por la falta de tecnicismo, pero aún estoy en proceso de nivelación para estar a la altura de este tipo de investigación.</p>
+      <div class="hero-stats">
+        <div class="hero-stat"><strong>Prof. Bastiani Calabrano</strong></div>
+      </div>
+    </div>
+  </section>
+
+  
+
+  <!-- ══════════════════════════════════════════════════════════
+       ANIMACIÓN CÍCLICA · GUÍA RÁPIDA PARAVIEW (para Importantes)
+       ══════════════════════════════════════════════════════════ -->
+  <style>
+    .pv-guide {
+      max-width: 1120px;
+      margin: 40px auto 60px;
+      padding: 0 20px;
+      font-family: 'Syne', system-ui, sans-serif;
+    }
+    .pv-guide-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #5b82b0;
+      margin: 0 0 6px;
+    }
+    .pv-guide-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: #0d1b3e;
+      margin: 0 0 4px;
+    }
+    .pv-guide-sub {
+      font-size: 14px;
+      color: #64748b;
+      margin: 0 0 22px;
+    }
+
+    .pv-stage {
+      position: relative;
+      background: linear-gradient(150deg, #0b1120 0%, #16233c 55%, #1e3a5f 100%);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 14px 50px rgba(13,27,62,0.35);
+      border: 1px solid rgba(91,130,176,0.25);
+    }
+    .pv-stage-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(91,130,176,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(91,130,176,0.08) 1px, transparent 1px);
+      background-size: 34px 34px;
+      pointer-events: none;
+    }
+
+    /* Barra superior tipo app */
+    .pv-topbar {
+      position: relative;
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 18px;
+      background: rgba(0,0,0,0.28);
+      border-bottom: 1px solid rgba(91,130,176,0.2);
+    }
+    .pv-dot { width: 11px; height: 11px; border-radius: 50%; }
+    .pv-dot.r { background: #ff5f57; }
+    .pv-dot.y { background: #febc2e; }
+    .pv-dot.g { background: #28c840; }
+    .pv-topbar-name {
+      margin-left: 8px; font-size: 12px; font-weight: 600;
+      color: rgba(255,255,255,0.55); letter-spacing: 0.04em;
+    }
+    .pv-step-counter {
+      margin-left: auto; font-size: 12px; font-weight: 700;
+      color: #93c5fd; background: rgba(44,111,173,0.22);
+      padding: 4px 12px; border-radius: 999px;
+      border: 1px solid rgba(91,130,176,0.4);
+    }
+
+    /* Cuerpo: escenario + panel de texto */
+    .pv-body {
+      position: relative;
+      display: flex;
+      min-height: 380px;
+    }
+    @media (max-width: 820px){ .pv-body{ flex-direction: column; } }
+
+    .pv-canvas {
+      flex: 1;
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
+      padding: 30px;
+      min-height: 300px;
+    }
+
+    /* Cada escena se apila y se muestra por opacidad */
+    .pv-scene {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transform: scale(0.96);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+      pointer-events: none;
+    }
+    .pv-scene.active { opacity: 1; transform: scale(1); pointer-events: auto; }
+    .pv-scene svg { width: 100%; max-width: 420px; height: auto; }
+
+    /* Panel lateral explicativo */
+    .pv-panel {
+      width: 340px;
+      background: rgba(10,17,32,0.55);
+      border-left: 1px solid rgba(91,130,176,0.2);
+      padding: 26px 24px;
+      display: flex; flex-direction: column;
+      backdrop-filter: blur(2px);
+    }
+    @media (max-width: 820px){
+      .pv-panel{ width: 100%; border-left: none; border-top: 1px solid rgba(91,130,176,0.2); }
+    }
+    .pv-panel-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 46px; font-weight: 700; line-height: 1;
+      color: #c9a227; margin-bottom: 8px;
+    }
+    .pv-panel-title {
+      font-size: 18px; font-weight: 700; color: #fff;
+      margin: 0 0 10px; line-height: 1.25;
+    }
+    .pv-panel-desc {
+      font-size: 13.5px; line-height: 1.6;
+      color: rgba(255,255,255,0.72); margin: 0 0 14px;
+    }
+    .pv-panel-path {
+      font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+      font-size: 12px; color: #93c5fd;
+      background: rgba(44,111,173,0.16);
+      border: 1px solid rgba(91,130,176,0.3);
+      border-radius: 8px; padding: 8px 10px; margin: 0 0 14px;
+      word-break: break-word;
+    }
+    .pv-panel-tip {
+      margin-top: auto;
+      font-size: 12.5px; line-height: 1.55;
+      color: #fde68a;
+      background: rgba(201,162,39,0.1);
+      border-left: 3px solid #c9a227;
+      border-radius: 0 8px 8px 0;
+      padding: 10px 12px;
+    }
+    .pv-panel-tip strong { color: #fef3c7; }
+
+    /* Controles */
+    .pv-controls {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 18px;
+      background: rgba(0,0,0,0.28);
+      border-top: 1px solid rgba(91,130,176,0.2);
+    }
+    .pv-btn {
+      background: rgba(91,130,176,0.15);
+      border: 1px solid rgba(91,130,176,0.35);
+      color: #cbd5e1; width: 34px; height: 34px;
+      border-radius: 9px; cursor: pointer; font-size: 15px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .pv-btn:hover { background: rgba(91,130,176,0.3); border-color: rgba(91,130,176,0.6); }
+    .pv-progress {
+      flex: 1; height: 5px; border-radius: 999px;
+      background: rgba(255,255,255,0.1); overflow: hidden;
+    }
+    .pv-progress-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg,#5b82b0,#93c5fd);
+      transition: width 0.15s linear;
+    }
+    .pv-dots-nav { display: flex; gap: 6px; }
+    .pv-dnav {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(255,255,255,0.22); cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .pv-dnav.active { background: #93c5fd; transform: scale(1.35); }
+
+    /* Animaciones internas SVG reutilizables */
+    @keyframes pv-float { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-7px); } }
+    @keyframes pv-dash  { to { stroke-dashoffset: -60; } }
+    @keyframes pv-pulse { 0%,100%{ opacity:0.35; } 50%{ opacity:1; } }
+    @keyframes pv-spin  { to { transform: rotate(360deg); } }
+    @keyframes pv-flow  { to { stroke-dashoffset: -240; } }
+    .pv-float { animation: pv-float 3s ease-in-out infinite; transform-origin: center; }
+    .pv-pulse { animation: pv-pulse 1.8s ease-in-out infinite; }
+    .pv-dash  { stroke-dasharray: 8 6; animation: pv-dash 1.4s linear infinite; }
+    .pv-flow  { stroke-dasharray: 10 14; animation: pv-flow 3s linear infinite; }
+    .pv-spin  { animation: pv-spin 14s linear infinite; transform-origin: center; }
+  </style>
+
+  <section class="pv-guide" id="pv-guide">
+    <p class="pv-guide-label">Guía express · míralo antes de los videos</p>
+    <h2 class="pv-guide-title">Lo esencial de ParaView en 8 pasos</h2>
+    <p class="pv-guide-sub">Animación automática y cíclica. Si te pierdes en los videos, vuelve aquí. Cada paso trae una nota técnica pensada para principiantes.</p>
+
+    <div class="pv-stage">
+      <div class="pv-stage-grid"></div>
+
+      <div class="pv-topbar">
+        <span class="pv-dot r"></span><span class="pv-dot y"></span><span class="pv-dot g"></span>
+        <span class="pv-topbar-name">ParaView 6.1.1 · guía interactiva</span>
+        <span class="pv-step-counter" id="pv-counter">1 / 8</span>
+      </div>
+
+      <div class="pv-body">
+        <div class="pv-canvas" id="pv-canvas">
+
+          <!-- ESCENA 1 · Instalación -->
+          <div class="pv-scene active" data-scene="0">
+            <svg viewBox="0 0 420 300" xmlns="http://www.w3.org/2000/svg">
+              <rect x="60" y="40" width="300" height="200" rx="12" fill="#1e293b" stroke="#5b82b0" stroke-width="2"/>
+              <rect x="60" y="40" width="300" height="34" rx="12" fill="#334155"/>
+              <circle cx="80" cy="57" r="5" fill="#ff5f57"/><circle cx="98" cy="57" r="5" fill="#febc2e"/><circle cx="116" cy="57" r="5" fill="#28c840"/>
+              <g class="pv-float">
+                <circle cx="210" cy="140" r="34" fill="none" stroke="#93c5fd" stroke-width="4"/>
+                <path d="M210 122 v30 M198 140 l12 14 12-14" stroke="#93c5fd" stroke-width="4" fill="none" stroke-linecap="round"/>
+              </g>
+              <rect x="120" y="196" width="180" height="10" rx="5" fill="#334155"/>
+              <rect x="120" y="196" width="130" height="10" rx="5" fill="#28c840" class="pv-pulse"/>
+              <text x="210" y="228" text-anchor="middle" fill="#94a3b8" font-size="12" font-family="monospace">installing… 72%</text>
+            </svg>
+          </div>
+
+          <!-- ESCENA 2 · Importar VTK -->
+          <div class="pv-scene" data-scene="1">
+            <svg viewBox="0 0 420 300" xmlns="http://www.w3.org/2000/svg">
+              <g class="pv-float">
+                <path d="M150 70 h80 l30 30 v120 h-110 z" fill="#1e293b" stroke="#5b82b0" stroke-width="2"/>
+                <path d="M230 70 v30 h30" fill="none" stroke="#5b82b0" stroke-width="2"/>
+                <text x="205" y="180" text-anchor="middle" fill="#93c5fd" font-size="22" font-weight="700" font-family="monospace">.vtk</text>
+              </g>
+              <path d="M285 140 h70" stroke="#c9a227" stroke-width="3" fill="none" class="pv-dash" marker-end="url(#pvarrow)"/>
+              <defs><marker id="pvarrow" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0 0 L7 3 L0 6 z" fill="#c9a227"/></marker></defs>
+              <rect x="330" y="110" width="60" height="60" rx="8" fill="#16233c" stroke="#c9a227" stroke-width="2"/>
+              <text x="360" y="146" text-anchor="middle" fill="#fde68a" font-size="18">▶</text>
+              <text x="360" y="190" text-anchor="middle" fill="#94a3b8" font-size="11">Apply</text>
+            </svg>
+          </div>
+
+          <!-- ESCENA 3 · Cell→Point + colores + malla -->
+          <div class="pv-scene" data-scene="2">
+            <svg viewBox="0 0 420 300" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="pvheat" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#1e3a8a"/><stop offset="0.5" stop-color="#22c55e"/><stop offset="1" stop-color="#ef4444"/>
+                </linearGradient>
+              </defs>
+              <g class="pv-float">
+                <path d="M110 90 L300 90 L330 210 L140 210 Z" fill="url(#pvheat)" stroke="#0b1120" stroke-width="1.5" opacity="0.92"/>
+                <path d="M155 90 L185 210 M200 90 L230 210 M245 90 L275 210 M110 130 L318 130 M125 170 L328 170"
+                      stroke="#0b1120" stroke-width="1" opacity="0.55"/>
+              </g>
+              <rect x="120" y="235" width="200" height="12" rx="6" fill="url(#pvheat)"/>
+              <text x="120" y="230" fill="#94a3b8" font-size="10">min</text>
+              <text x="300" y="230" fill="#94a3b8" font-size="10">max</text>
+            </svg>
+          </div>
+
+          <!-- ESCENA 4 · Texto + leyenda -->
+          <div class="pv-scene" data-scene="3">
+            <svg viewBox="0 0 420 300" xmlns="http://www.w3.org/2000/svg">
+              <rect x="70" y="60" width="280" height="180" rx="10" fill="#0f1a2e" stroke="#5b82b0" stroke-width="1.5"/>
+              <g class="pv-float">
+                <text x="120" y="120" fill="#fde68a" font-size="22" font-weight="700" font-family="serif">Título</text>
+                <rect x="118" y="128" width="90" height="3" fill="#c9a227" class="pv-pulse"/>
+              </g>
+              <rect x="250" y="95" width="16" height="110" rx="4" fill="url(#pvheat)"/>
+              <rect x="250" y="95" width="16" height="110" rx="4" fill="none" stroke="#93c5fd" stroke-width="1.5"/>
+              <text x="278" y="105" fill="#94a3b8" font-size="11">1.0</text>
+              <text x="278" y="205" fill="#94a3b8" font-size="11">0.0</text>
+              <text x="210" y="225" text-anchor="middle" fill="#64748b" font-size="11">Filters → Text</text>
+            </svg>
+          </div>
+
+          <!-- ESCENA 5 · 2D vs 3D -->
+          <div class="pv-scene" data-scene="4">
+            <svg viewBox="0 0 420 300" xmlns="http://www.w3.org/2000/svg">
+              <rect x="55" y="95" width="120" height="110" rx="10" fill="#16233c" stroke="#5b82b0" stroke-width="2"/>
+              <text x="115" y="88" text-anchor="middle" fill="#93c5fd" font-size="13" font-weight="700">2D</text>
+              <rect x="80" y="125" width="70" height="55" fill="none" stroke="#22c55e" stroke-width="2"/>
+              <text x="115" y="200" text-anchor="middle" fill="#94a3b8" font-size="10">mover libre</text>
+
+              <text x="210" y="155" text-anchor="middle" fill="#c9a227" font-size="22">⇄</text>
+
+              <rect x="245" y="95" width="120" height="110" rx="10" fill="#16233c" stroke="#5b82b0" stroke-width="2"/>
+              <text x="305" y="88" text-anchor="middle" fill="#93c5fd" font-size="13" font-weight="700">3D</text>
+              <g class="pv-spin" style="transform-origin:305px 152px">
+                <path d="M280 130 L330 130 L340 175 L290 175 Z" fill="none" stroke="#22c55e" stroke-width="2"/>
+                <path d="M280 130 L290 118 L340 118 L330 130 M330 130 L340 118 L340 175 L340 175 L340 163"
+                      fill="none" stroke="#5b82b0" stroke-width="1.5"/>
+              </g>
+              <text x="305" y="200" text-anchor="middle" fill="#94a3b8" font-size="10">girar / rotar</text>
+            </svg>
+          </div>
+
+          <!-- ESCENA 6 · Screenshot fondo transparente -->
+          <div class="pv-scene" data-scene="5">
+            <svg viewBox="0 0 420 300" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <pattern id="pvcheck" width="20" height="20" patternUnits="userSpaceOnUse">
+                  <rect width="20" height="20" fill="#e2e8f0"/><rect width="10" height="10" fill="#cbd5e1"/><rect x="10" y="10" width="10" height="10" fill="#cbd5e1"/>
+                </pattern>
+              </defs>
+              <rect x="90" y="70" width="240" height="150" rx="10" fill="url(#pvcheck)" stroke="#5b82b0" stroke-width="2"/>
+              <g class="pv-float">
+                <circle cx="210" cy="145" r="42" fill="url(#pvheat)" opacity="0.9"/>
+              </g>
+              <g class="pv-pulse">
+                <circle cx="330" cy="80" r="22" fill="#0f1a2e" stroke="#c9a227" stroke-width="2"/>
+                <rect x="320" y="72" width="20" height="14" rx="3" fill="none" stroke="#fde68a" stroke-width="2"/>
+                <circle cx="330" cy="79" r="4" fill="none" stroke="#fde68a" stroke-width="2"/>
+              </g>
+              <text x="210" y="245" text-anchor="middle" fill="#94a3b8" font-size="11">export .png · fondo transparente</text>
+            </svg>
+          </div>
+
+          <!-- ESCENA 7 · Stream Tracer + outline -->
+          <div class="pv-scene" data-scene="6">
+            <svg viewBox="0 0 420 300" xmlns="http://www.w3.org/2000/svg">
+              <path d="M90 70 L300 70 L330 120 L330 230 L120 230 L90 180 Z" fill="none" stroke="#5b82b0" stroke-width="1.5" stroke-dasharray="4 4"/>
+              <path d="M90 70 L120 120 L330 120 M120 120 L120 230" fill="none" stroke="#5b82b0" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.6"/>
+              <g fill="none" stroke-width="3" stroke-linecap="round">
+                <path d="M120 200 C 180 120, 240 220, 320 140" stroke="#38bdf8" class="pv-flow"/>
+                <path d="M120 175 C 190 110, 250 200, 315 120" stroke="#22c55e" class="pv-flow"/>
+                <path d="M120 150 C 185 100, 255 180, 318 100" stroke="#c9a227" class="pv-flow"/>
+              </g>
+              <text x="210" y="255" text-anchor="middle" fill="#94a3b8" font-size="11">Filters → Stream Tracer · rep: Outline</text>
+            </svg>
+          </div>
+
+          <!-- ESCENA 8 · Esfera / línea semilla -->
+          <div class="pv-scene" data-scene="7">
+            <svg viewBox="0 0 420 300" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="140" cy="150" r="34" fill="rgba(56,189,248,0.15)" stroke="#38bdf8" stroke-width="2" class="pv-pulse"/>
+              <line x1="140" y1="116" x2="140" y2="150" stroke="#38bdf8" stroke-width="1.5"/>
+              <text x="150" y="130" fill="#93c5fd" font-size="11" font-family="monospace">r</text>
+              <text x="140" y="205" text-anchor="middle" fill="#94a3b8" font-size="10">semilla: esfera</text>
+
+              <line x1="250" y1="110" x2="250" y2="195" stroke="#c9a227" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="250" cy="110" r="4" fill="#fde68a"/><circle cx="250" cy="195" r="4" fill="#fde68a"/>
+              <text x="250" y="215" text-anchor="middle" fill="#94a3b8" font-size="10">semilla: línea</text>
+
+              <g fill="none" stroke-width="2.5" stroke-linecap="round">
+                <path d="M170 150 C 230 120, 290 180, 350 140" stroke="#22c55e" class="pv-flow"/>
+                <path d="M265 150 C 300 130, 330 170, 360 150" stroke="#38bdf8" class="pv-flow"/>
+              </g>
+            </svg>
+          </div>
+
+        </div>
+
+        <!-- Panel explicativo -->
+        <div class="pv-panel">
+          <div class="pv-panel-num" id="pv-num">01</div>
+          <h3 class="pv-panel-title" id="pv-title"></h3>
+          <p class="pv-panel-desc" id="pv-desc"></p>
+          <div class="pv-panel-path" id="pv-path"></div>
+          <div class="pv-panel-tip" id="pv-tip"></div>
+        </div>
+      </div>
+
+      <div class="pv-controls">
+        <button class="pv-btn" id="pv-prev" title="Anterior">‹</button>
+        <button class="pv-btn" id="pv-play" title="Pausar / reproducir">❚❚</button>
+        <button class="pv-btn" id="pv-next" title="Siguiente">›</button>
+        <div class="pv-progress"><div class="pv-progress-fill" id="pv-fill"></div></div>
+        <div class="pv-dots-nav" id="pv-dnav"></div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    (function(){
+      const steps = [
+        {
+          n: '01', title: 'Instalación directa',
+          desc: 'Descarga e instala el ejecutable oficial para Windows. No necesitas configurar nada extra: instalación siguiente-siguiente-finalizar.',
+          path: 'ParaView-6.1.1-Windows-Python3.12-msvc2017-AMD64',
+          tip: 'Elige siempre la versión que coincide con tu sistema (AMD64 = Windows 64 bits). La que trae Python te sirve para automatizar después.'
+        },
+        {
+          n: '02', title: 'Importar un archivo .vtk',
+          desc: 'File → Open, selecciona tu archivo .vtk y presiona Apply. Sin el Apply, ParaView carga pero no muestra nada.',
+          path: 'File → Open → archivo.vtk → Apply',
+          tip: '<strong>Importante:</strong> el botón <em>Apply</em> (verde) confirma cada acción. Si no ves cambios, casi siempre es porque olvidaste presionarlo.'
+        },
+        {
+          n: '03', title: 'Cell Data → Point Data',
+          desc: 'Convierte los datos de celda a datos de punto para suavizar la visualización. Luego eliges la variable a colorear, el mapa de colores y activas el mallado (Wireframe / Surface With Edges).',
+          path: 'Apply → Filters → Alphabetical → Cell Data to Point Data',
+          tip: '<strong>Importante:</strong> «Point Data» interpola los valores y hace que el gradiente de color se vea continuo en vez de a bloques.'
+        },
+        {
+          n: '04', title: 'Leyenda + texto',
+          desc: 'Cambia el color de la barra de leyenda y añade un texto (título). Ajusta el contenido, su color y arrástralo a las coordenadas que quieras.',
+          path: 'Apply → Filters → Search → Text → Apply',
+          tip: '<strong>Importante:</strong> el texto es un filtro independiente. Puedes moverlo con el ratón o fijar coordenadas exactas en sus propiedades.'
+        },
+        {
+          n: '05', title: 'Interacción 2D vs 3D',
+          desc: 'Si el dominio es d=2, mueves la vista libremente. Si es d=3, pulsa el botón «2D» para desplazarte plano, y el botón «3D» para rotar y girar el objeto.',
+          path: 'Barra de vista: botón 2D / botón 3D',
+          tip: '<strong>Importante:</strong> ¿la cámara «no gira»? Probablemente estás en modo 2D. Cambia a 3D para orbitar alrededor del modelo.'
+        },
+        {
+          n: '06', title: 'Screenshot con fondo transparente',
+          desc: 'Usa el botón de captura para exportar la imagen. Activa la opción de fondo transparente y guarda en .png para tener un PNG limpio, sin fondo.',
+          path: 'Save Screenshot → Transparent Background → .png',
+          tip: '<strong>Importante:</strong> el fondo transparente es ideal para pegar la figura en informes o slides sin el recuadro oscuro de ParaView.'
+        },
+        {
+          n: '07', title: 'Streamlines (Stream Tracer)',
+          desc: 'Importa el archivo, aplica el filtro Stream Tracer para las líneas de flujo, visualiza el dominio y con clic derecho sobre la representación elige «Outline» para ver solo el contorno.',
+          path: 'Filters → Search → Stream Tracer · clic derecho → Representation → Outline',
+          tip: '<strong>Importante:</strong> «Outline» dibuja solo la caja del dominio, así las streamlines no quedan tapadas por la superficie sólida.'
+        },
+        {
+          n: '08', title: 'Semilla: esfera o línea',
+          desc: 'Trabaja únicamente con el Stream Tracer eligiendo la fuente de semillas: una esfera de radio r (Point Cloud) o una línea (High Resolution Line Source). Ajusta y visualiza.',
+          path: 'Stream Tracer → Seed Type: Sphere (radio r) / Line',
+          tip: '<strong>Importante:</strong> más semillas = más líneas = escena más cargada. Empieza con pocas y súbelas hasta que se vea bien.'
+        }
+      ];
+
+      const canvas   = document.getElementById('pv-canvas');
+      const scenes   = canvas.querySelectorAll('.pv-scene');
+      const numEl    = document.getElementById('pv-num');
+      const titleEl  = document.getElementById('pv-title');
+      const descEl   = document.getElementById('pv-desc');
+      const pathEl   = document.getElementById('pv-path');
+      const tipEl    = document.getElementById('pv-tip');
+      const counter  = document.getElementById('pv-counter');
+      const fill     = document.getElementById('pv-fill');
+      const dnavBox  = document.getElementById('pv-dnav');
+      const btnPrev  = document.getElementById('pv-prev');
+      const btnNext  = document.getElementById('pv-next');
+      const btnPlay  = document.getElementById('pv-play');
+
+      const DURATION = 5200; // ms por escena
+      let idx = 0, playing = true, t0 = null, raf = null;
+
+      // dots de navegación
+      steps.forEach((_, i) => {
+        const d = document.createElement('div');
+        d.className = 'pv-dnav' + (i===0?' active':'');
+        d.onclick = () => { goTo(i); resetTimer(); };
+        dnavBox.appendChild(d);
+      });
+      const dnav = dnavBox.querySelectorAll('.pv-dnav');
+
+      function render(i){
+        const s = steps[i];
+        numEl.textContent   = s.n;
+        titleEl.textContent = s.title;
+        descEl.textContent  = s.desc;
+        pathEl.textContent  = s.path;
+        tipEl.innerHTML     = s.tip;
+        counter.textContent = (i+1) + ' / ' + steps.length;
+        scenes.forEach((sc,j)=> sc.classList.toggle('active', j===i));
+        dnav.forEach((d,j)=> d.classList.toggle('active', j===i));
+      }
+
+      function goTo(i){
+        idx = (i + steps.length) % steps.length;
+        render(idx);
+      }
+
+      function resetTimer(){ t0 = performance.now(); fill.style.width='0%'; }
+
+      function loop(now){
+        if(playing){
+          if(t0===null) t0 = now;
+          const elapsed = now - t0;
+          fill.style.width = Math.min(100, (elapsed/DURATION)*100) + '%';
+          if(elapsed >= DURATION){ goTo(idx+1); resetTimer(); }
+        }
+        raf = requestAnimationFrame(loop);
+      }
+
+      btnNext.onclick = () => { goTo(idx+1); resetTimer(); };
+      btnPrev.onclick = () => { goTo(idx-1); resetTimer(); };
+      btnPlay.onclick = () => {
+        playing = !playing;
+        btnPlay.textContent = playing ? '❚❚' : '▶';
+        if(playing){ t0 = performance.now() - (parseFloat(fill.style.width||0)/100)*DURATION; }
+      };
+
+      // Pausa al pasar el ratón, reanuda al salir (cómodo para leer)
+      const stage = document.querySelector('.pv-stage');
+      stage.addEventListener('mouseenter', ()=>{ if(playing){ playing=false; btnPlay.textContent='▶'; } });
+      stage.addEventListener('mouseleave', ()=>{ if(!playing){ playing=true; btnPlay.textContent='❚❚'; t0=performance.now()-(parseFloat(fill.style.width||0)/100)*DURATION; } });
+
+      render(0);
+      resetTimer();
+      raf = requestAnimationFrame(loop);
+    })();
+  </script>
+
+
+  <!-- VIDEOS EXPLICATIVOS -->
+  <main class="modulos-section" id="videos" style="padding-bottom: 0;">
+    <p class="section-label">Antes de comenzar</p>
+    <h2 class="section-titulo">Videos explicativos del curso</h2>
+
+    <div class="video-index-section">
+
+      <div class="video-index-header">
+        <div>
+          <div class="video-index-title">🎬 Instalación y uso de Paraview (Humildemente).</div>
+          <div class="video-index-subtitle">Instalación · Importación · Manipulación de gráficas en d=2,3. · Exportación · Streamlines </div>
+        </div>
+        <span class="video-index-badge">7 videos</span>
+      </div>
+
+      <div class="video-index-progress">
+        <span class="progress-label">Progreso</span>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="fill-idx" style="width: 0%"></div>
+        </div>
+        <span class="progress-count" id="count-idx">0 / 3</span>
+      </div>
+
+      <div class="video-index-layout">
+
+        <!-- Reproductor principal -->
+        <div class="video-index-main">
+          <div class="video-index-embed">
+            <div class="video-placeholder" id="placeholder-idx" onclick="playIndexVideo(0)">
+              <div class="video-placeholder-icon">▶</div>
+              <div class="video-placeholder-title">Comienza aquí</div>
+              <div class="video-placeholder-sub">Haz clic para reproducir el primer video</div>
+            </div>
+            <iframe id="player-idx" src="" allowfullscreen allow="autoplay; fullscreen" loading="lazy" title="Video introductorio" style="display:none;"></iframe>
+          </div>
+          <div class="video-index-infobar">
+            <span class="video-info-title" id="title-idx">Selecciona un video para comenzar (Recuerda deslizar hacia abajo para visualizar el módulo 03)</span>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span class="video-info-meta" id="meta-idx"></span>
+              <button class="btn-expand" id="btn-expand" onclick="openModal()" style="display:none;" title="Ver en pantalla grande">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                Ampliar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar de videos -->
+        <div class="video-index-sidebar">
+          <div class="sidebar-group-label">Módulo 01</div>
+          <div class="sidebar-list" id="list-idx">
+
+            <div class="video-item" onclick="playIndexVideo(0)" data-index="0">
+              <div class="item-check" id="check-idx-0"></div>
+              <div class="item-info">
+                <div class="item-title">Instalacion de Paraview en Windows</div>
+                <div class="item-now-playing">▶ Reproduciendo</div>
+                <div class="item-duration">⏱ 10:44</div>
+              </div>
+            </div>
+
+            <div class="sidebar-group-label" style="margin-top:4px;">Módulo 02</div>
+
+            <div class="video-item" onclick="playIndexVideo(1)" data-index="1">
+              <div class="item-check" id="check-idx-1"></div>
+              <div class="item-info">
+                <div class="item-title">Generar imagen en 2d</div>
+                <div class="item-now-playing">▶ Reproduciendo</div>
+                <div class="item-duration">⏱ 19:08</div>
+              </div>
+            </div>
+
+            <div class="video-item" onclick="playIndexVideo(2)" data-index="2">
+              <div class="item-check" id="check-idx-2"></div>
+              <div class="item-info">
+                <div class="item-title">Generar imagen en 3d</div>
+                <div class="item-now-playing">▶ Reproduciendo</div>
+                <div class="item-duration">⏱ 08:56</div>
+              </div>
+            </div>
+
+            <div class="sidebar-group-label" style="margin-top:4px;">Módulo 03 (Intento de generar streamlines)</div>
+
+            <div class="video-item" onclick="playIndexVideo(3)" data-index="3">
+              <div class="item-check" id="check-idx-3"></div>
+              <div class="item-info">
+                <div class="item-title">Streamlines version humilde</div>
+                <div class="item-now-playing">▶ Reproduciendo</div>
+                <div class="item-duration">⏱ 13:37</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <strong>Videos Complementarios para el uso de Paraview · B. Calabrano</strong> &nbsp;·&nbsp;  · Acceso libre
+  </footer>
+
+  <!-- MODAL LIGHTBOX -->
+  <div id="video-modal" onclick="closeModalOutside(event)">
+    <div class="modal-inner">
+      <button class="modal-close" onclick="closeModal()" title="Cerrar">✕</button>
+      <div class="modal-ratio">
+        <iframe id="modal-player" src="" allowfullscreen allow="autoplay; fullscreen"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const indexVideos = [
+      { id: '9EDjdBM1gvA', title: 'Instalacion de Paraview en Windows', duration: '10:43' },
+      { id: 'uUB8VgcfFXs', title: 'Generar imagen en 2d',      duration: '19:08' },
+      { id: 'MxgES-CR-2s', title: 'Generar imagen en 3d',                 duration: '08:56' },
+      { id: 'oAB3DBbuX_k', title: 'Análisis y Creación de OA',      duration: '14:43' },
+    ];
+
+    const watchedIdx = new Set();
+
+    function playIndexVideo(index) {
+      const v = indexVideos[index];
+      const placeholder = document.getElementById('placeholder-idx');
+      const player      = document.getElementById('player-idx');
+      placeholder.style.display = 'none';
+      player.style.display      = 'block';
+      player.src = 'https://www.youtube.com/embed/' + v.id + '?autoplay=1&rel=0&fs=1';
+
+      document.getElementById('title-idx').textContent = v.title;
+      document.getElementById('meta-idx').textContent  = v.duration;
+
+      // Mostrar botón ampliar
+      const btnExpand = document.getElementById('btn-expand');
+      btnExpand.style.display = 'inline-flex';
+      btnExpand.dataset.videoId = v.id;
+
+      document.querySelectorAll('#list-idx .video-item').forEach((item, i) => {
+        item.classList.toggle('active', i === index);
+      });
+
+      watchedIdx.add(index);
+      const total = indexVideos.length;
+      const done  = watchedIdx.size;
+      document.getElementById('fill-idx').style.width   = Math.round((done/total)*100) + '%';
+      document.getElementById('count-idx').textContent  = done + ' / ' + total;
+
+      watchedIdx.forEach(i => {
+        const check = document.getElementById('check-idx-' + i);
+        if (check) {
+          check.style.background  = '#5624d0';
+          check.style.borderColor = '#5624d0';
+          check.textContent       = '✓';
+          check.closest('.video-item').classList.add('completed');
+        }
+      });
+    }
+
+    function openModal() {
+      const videoId = document.getElementById('btn-expand').dataset.videoId;
+      if (!videoId) return;
+      document.getElementById('modal-player').src =
+        'https://www.youtube.com/embed/' + videoId + '?autoplay=1&rel=0&fs=1';
+      document.getElementById('video-modal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      document.getElementById('video-modal').classList.remove('open');
+      document.getElementById('modal-player').src = '';
+      document.body.style.overflow = '';
+    }
+
+    function closeModalOutside(e) {
+      if (e.target === document.getElementById('video-modal')) closeModal();
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeModal();
+    });
+  </script>
+
+  <script>
+    /* ── CARRUSEL ── */
+    const track   = document.getElementById('carousel-track');
+    const dotsBox = document.getElementById('carousel-dots');
+
+    // Guarda: este HTML no incluye el carrusel, así que solo corre si existe.
+    if (track && dotsBox) {
+      const slides  = track.querySelectorAll('.carousel-slide');
+      const total   = slides.length;
+      let current   = 0;
+
+      slides.forEach((_, i) => {
+        const d = document.createElement('div');
+        d.className = 'cdot' + (i === 0 ? ' active' : '');
+        d.onclick   = () => goTo(i);
+        dotsBox.appendChild(d);
+      });
+
+      window.goTo = function (n) {
+        current = Math.max(0, Math.min(n, total - 1));
+        track.style.transform = 'translateX(-' + current * 100 + '%)';
+        dotsBox.querySelectorAll('.cdot').forEach((d, i) => d.classList.toggle('active', i === current));
+        const bp = document.getElementById('btn-prev');
+        const bn = document.getElementById('btn-next');
+        if (bp) bp.disabled = current === 0;
+        if (bn) bn.disabled = current === total - 1;
+      };
+
+      window.moveCarousel = function (dir) { goTo(current + dir); };
+
+      goTo(0);
+    }
+  </script>
+
+</body>
+</html>
